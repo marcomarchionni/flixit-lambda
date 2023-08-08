@@ -4,7 +4,9 @@
   "description": "Lambda function for flixit-api",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc && cd dist && npm install --only=prod && zip -r ../flixit-lambda.zip . && cd ..",
+    "deploy": "aws --endpoint-url http://127.0.0.1:4566 lambda update-function-code --function-name flixit-lambda --zip-file fileb://flixit-lambda.zip"
   },
   "keywords": [],
   "author": "",
