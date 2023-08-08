@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc && cd dist && npm install --only=prod && zip -r ../flixit-lambda.zip . && cd ..",
-    "deploy": "aws --endpoint-url http://127.0.0.1:4566 lambda update-function-code --function-name flixit-lambda --zip-file fileb://flixit-lambda.zip"
+    "build": "tsc && mkdir -p dist && cp package.json dist/ && cd dist && npm install --only=prod && zip -r ../flixit-lambda.zip ./* -x \"package.json\" \"package-lock.json\" && cd ..",
+    "deploy": "aws --endpoint-url http://127.0.0.1:4566 lambda update-function-code --function-name flixit-lambda --zip-file fileb://flixit-lambda.zip",
+    "start": "aws --endpoint-url http://127.0.0.1:4566 lambda invoke --function-name flixit-lambda --payload '{}' output.txt"
   },
   "keywords": [],
   "author": "",
