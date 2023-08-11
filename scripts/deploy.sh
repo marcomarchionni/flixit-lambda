@@ -7,7 +7,7 @@ HANDLER="index.handler"
 RUNTIME="nodejs18.x" 
 ROLE_ARN="arn:aws:iam::872156512074:role/flixit-media-reader-writer"
 LAYER_ARN="arn:aws:lambda:us-east-1:872156512074:layer:sharp-layer:1"
-ENV_VARIABLES='Variables={}' # Update with your environment variables
+ENV_VARIABLES='Variables={}' 
 
 # Check if the Lambda function already exists
 function_exists=$(aws lambda list-functions --query "Functions[?FunctionName=='$FUNCTION_NAME'].FunctionName" --output text)
