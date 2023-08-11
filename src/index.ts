@@ -1,36 +1,44 @@
-import { CopyObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { resizeImage } from "./image-resizer";
+import { getS3ImageStream, putS3ImageBuffer } from "./s3";
 
 export const handler = async (event: any): Promise<any> => {
+  const record = event.Records[0];
+  const bucketName = record.s3.bucket.name;
+  const originalPrefix = "original-images/";
+  const resizedPrefix = "resized-images/";
+  const sourceKey = decodeURIComponent(
+    record.s3.object.key.replace(/\+/g, " ")
+  );
+  const resizedImageKey = sourceKey.startsWith(originalPrefix)
+    ? sourceKey.replace(originalPrefix, resizedPrefix)
+    : `${resizedPrefix}${sourceKey}`;
+
   // Read data from event object.
-  const region = "us-east-1";
-  const sourceBucket = "flixit-media-bucket";
-  const sourceKey = "cloud.png";
+  if (!sourceKey)
+    return {
+      statusCode: 400,
+      body: "No key specified",
+    };
 
-  const s3Client = new S3Client({
-    region: region,
-    endpoint: "http://host.docker.internal:4566", // Adjust this as per your LocalStack setup
-    forcePathStyle: true,
-  });
-
-  const copyObjectParams = {
-    CopySource: encodeURI(`${sourceBucket}/${sourceKey}`),
-    Bucket: sourceBucket,
-    Key: `resized-images/${sourceKey}`,
-  };
-
-  const copyObjectCommand = new CopyObjectCommand(copyObjectParams);
   try {
-    const response = await s3Client.send(copyObjectCommand);
-    console.log("Buckets listed successfully:", response);
+    //Get image from bucket
+    const imageStream = await getS3ImageStream(bucketName, sourceKey);
+
+    // Resize image
+    const resizedImageBuffer = await resizeImage(imageStream);
+
+    // Put resized image in bucket
+    await putS3ImageBuffer(bucketName, resizedImageBuffer, resizedImageKey);
+
     return {
       statusCode: 200,
-      body: JSON.stringify(response),
+      body: "Image resized and uploaded successfully",
     };
-  } catch (err) {
-    console.log("Error:", err);
+  } catch (error) {
+    console.error(error);
     return {
       statusCode: 500,
-      body: JSON.stringify(err),
+      body: "An error occurred",
     };
   }
 };

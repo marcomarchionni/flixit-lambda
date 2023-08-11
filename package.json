@@ -4,15 +4,16 @@
   "description": "Lambda function for flixit-api",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc && mkdir -p dist && cp package.json dist/ && cd dist && npm install --only=prod && zip -r ../flixit-lambda.zip ./* -x \"package.json\" \"package-lock.json\" && cd ..",
-    "deploy": "aws --endpoint-url http://127.0.0.1:4566 lambda update-function-code --function-name flixit-lambda --zip-file fileb://flixit-lambda.zip",
-    "start": "aws --endpoint-url http://127.0.0.1:4566 lambda invoke --function-name flixit-lambda --payload '{}' output.txt"
+    "build": "bash ./scripts/build.sh",
+    "deploy": "bash ./scripts/deploy.sh",
+    "start": "bash ./scripts/start.sh"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^20.4.9",
+    "sharp": "^0.32.4",
     "typescript": "^5.1.6"
   },
   "dependencies": {

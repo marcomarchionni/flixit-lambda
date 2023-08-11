@@ -4,4 +4,8 @@ node_modules/
 
 *.zip
 
-output.txt
+output.*
+
+.DS_Store
+
+out/
